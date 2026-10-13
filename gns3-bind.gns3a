@@ -11,15 +11,11 @@
   "status": "stable",
   "maintainer": "Stephan Kleber",
   "maintainer_email": "stephan.kleber@rwu.de",
-  "symbol": ":/symbols/classic/dns_server.svg",
+  "symbol": ":/symbols/classic/server.svg",
   "docker": {
     "adapters": 1,
     "image": "gns3-bind:latest",
     "console_type": "telnet",
-    "environment": {
-      "QUERY_LOG": "yes",
-      "AUTHORITATIVE": "self",
-      "DOMAIN_lab_local": "@,A,10.0.0.1 ns,A,10.0.0.1 router,A,10.0.0.254 www,A,10.0.0.10 mail,A,10.0.0.20 client,A,10.0.0.100"
-    }
+    "environment": "QUERY_LOG=yes\nAUTHORITATIVE=self\nDOMAIN_lab_local=@,A,10.0.0.1 ns,A,10.0.0.1 router,A,10.0.0.254 www,A,10.0.0.10 mail,A,10.0.0.20 client,A,10.0.0.100"
   }
 }
