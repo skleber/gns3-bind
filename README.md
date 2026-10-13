@@ -17,7 +17,7 @@ Lightweight Alpine-based Docker image optimized for **GNS3 network simulations, 
   * `dns-reload`: Validates syntax with `named-checkconf` and reloads zones without restarting the container.
   * `dns-test`: Runs automated local DNS self-tests against all configured zones.
 * **Pre-flight Validation**: Automatically validates configurations using `named-checkconf -z` before launching to prevent silent startup failures.
-* **GNS3 Appliance File**: Includes `gns3-bind.gns3a` for 1-click import into GNS3.
+* **GNS3 Appliance File**: Includes `gns3-bind.gns3a` for 1-click import into GNS3 (see [Usage.md](Usage.md)).
 * **Dual Stack**: Full native support for IPv4 (`A`) and IPv6 (`AAAA`) queries.
 
 ---
@@ -42,20 +42,24 @@ In GNS3: **Edit** &rarr; **Preferences** &rarr; **Docker containers** &rarr; **N
 
 ### Running in a GNS3 Lab Topology
 1. Drag the **BIND DNS Server** into your topology and connect `eth0` to a switch or router.
-2. Start the node and open its console:
+2. *(Optional)* Customize environment variables (Right-click &rarr; **Configure** &rarr; **Environment**). See [Usage.md](Usage.md) for a detailed configuration walkthrough.
+3. Start the node and open its console:
    * You will see the informational banner displaying detected IPs, active zones, and query logging status.
-3. Connect a client host (e.g. VPCS, Alpine, or router) with an IP in the same subnet.
-4. From the client, test DNS resolution:
+4. Connect a client host (e.g. VPCS, Alpine, or router) with an IP in the same subnet.
+5. From the client, test DNS resolution:
    ```bash
    dig @<server-ip> www.lab.local
    # or
    nslookup www.lab.local <server-ip>
    ```
-5. Watch the DNS query appear live in the BIND server console window!
+6. Watch the DNS query appear live in the BIND server console window!
 
 ---
 
 ## Environment Variables Reference
+
+> [!TIP]
+> For a quick step-by-step guide on setting these variables in the GNS3 UI, refer to [Usage.md](Usage.md).
 
 | Variable | Default | Description |
 |---|---|---|

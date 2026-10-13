@@ -11,6 +11,7 @@
   "status": "stable",
   "maintainer": "Stephan Kleber",
   "maintainer_email": "stephan.kleber@rwu.de",
+  "usage": "Configure the DNS server via environment variables in the node properties (Right-click node -> Configure -> Environment):\n\n- Variables are set one per line as KEY=value (no 'export', no outer quotes).\n- Define zones with DOMAIN_<zone>=<records> (replace dots '.' with '_').\n  Record format: owner,type,rdata (space-separated).\n  Example: DOMAIN_site=alice,A,192.168.111.17 bob,A,192.168.111.18\n  Example: DOMAIN_example_com=@,A,10.0.0.1 www,A,10.0.0.10 @,MX,10,mail.example.com.\n- Server role: AUTHORITATIVE=self (default standalone root) or AUTHORITATIVE=iana,<forwarder_ip> (forwarding resolver).\n- Live query logging: QUERY_LOG=yes\n- Restart the node after changing environment variables.\n\nSee Usage.md for details.",
   "symbol": ":/symbols/classic/server.svg",
   "docker": {
     "adapters": 1,
