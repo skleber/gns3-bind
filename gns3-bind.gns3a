@@ -16,6 +16,6 @@
     "adapters": 1,
     "image": "ghcr.io/skleber/gns3-bind:latest",
     "console_type": "telnet",
-    "environment": "QUERY_LOG=yes\nAUTHORITATIVE=self\nDOMAIN_lab_local=@,A,10.0.0.1 ns,A,10.0.0.1 router,A,10.0.0.254 www,A,10.0.0.10 mail,A,10.0.0.20 client,A,10.0.0.100"
+    "environment": "QUERY_LOG=yes\nAUTHORITATIVE=self\nDOMAIN_site=alice,A,192.168.111.17"
   }
 }
