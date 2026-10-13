@@ -1,0 +1,39 @@
+#!/bin/sh
+# Copyright (C) 2026 Stephan Kleber. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Display live BIND 9 status, loaded zones, and listening sockets
+echo "=========================================================="
+echo "                   BIND 9 Server Status                   "
+echo "=========================================================="
+
+if pgrep named >/dev/null 2>&1; then
+    echo "[*] Daemon: named is RUNNING (PID: $(pgrep named | tr '\n' ' '))"
+else
+    echo "[!] Daemon: named is NOT running!"
+fi
+
+echo ""
+echo "--- Active Network Sockets (Port 53) ---"
+if command -v ss >/dev/null 2>&1; then
+    ss -lntu '( sport = :53 )'
+else
+    netstat -lntu 2>/dev/null | grep ':53 ' || echo "Socket info unavailable."
+fi
+
+echo ""
+echo "--- RNDC Status ---"
+rndc status 2>/dev/null || echo "RNDC control channel not answering (is named running?)"
+
+echo ""
+echo "--- Configured Zone Files in /var/bind/zones ---"
+if [ -d /var/bind/zones ] && [ "$(ls -A /var/bind/zones 2>/dev/null)" ]; then
+    ls -lh /var/bind/zones/*.zone 2>/dev/null
+else
+    echo "No zone files found in /var/bind/zones."
+fi
+echo "=========================================================="

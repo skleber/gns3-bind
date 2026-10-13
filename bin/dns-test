@@ -1,0 +1,50 @@
+#!/bin/sh
+# Copyright (C) 2026 Stephan Kleber. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Perform local DNS query self-tests against configured zones
+echo "=========================================================="
+echo "               Local DNS Self-Resolution Test             "
+echo "=========================================================="
+
+ZONES=$(ls /var/bind/zones/*.zone 2>/dev/null | sed 's/.*\///; s/\.zone$//')
+
+if [ -z "$ZONES" ]; then
+    echo "[*] No local zones found. Testing recursive resolution for google.com..."
+    dig @127.0.0.1 google.com A +short
+    exit 0
+fi
+
+for z in $ZONES; do
+    echo "--- Testing Zone: ${z} ---"
+    echo -n "  SOA: "
+    dig @127.0.0.1 "${z}" SOA +short || echo "(no SOA answer)"
+    echo -n "  NS:  "
+    dig @127.0.0.1 "${z}" NS +short || echo "(no NS answer)"
+    
+    # Query all A and AAAA records defined in the zone file
+    ZONE_FILE="/var/bind/zones/${z}.zone"
+    if [ -f "$ZONE_FILE" ]; then
+        awk '$2 == "A" || $2 == "AAAA" {print $1, $2}' "$ZONE_FILE" | while read -r name rtype; do
+            query_name="${name}"
+            if [ "$name" = "@" ]; then
+                query_name="${z}"
+            elif [ "${name%.${z}}" = "$name" ]; then
+                query_name="${name}.${z}"
+            fi
+            echo -n "  Record [${rtype}] ${query_name} -> "
+            res=$(dig @127.0.0.1 "${query_name}" "${rtype}" +short)
+            if [ -n "$res" ]; then
+                echo "$res"
+            else
+                echo "(nxdomain / empty)"
+            fi
+        done
+    fi
+    echo ""
+done
+echo "=========================================================="

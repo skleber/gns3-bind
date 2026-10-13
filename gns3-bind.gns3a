@@ -1,0 +1,25 @@
+{
+  "appliance_id": "b3e94412-d852-4e08-9df5-60b6c6b3bb99",
+  "name": "BIND DNS Server",
+  "category": "guest",
+  "description": "BIND 9 authoritative and recursive DNS server for GNS3 network topologies, demonstrations, and teaching labs. Originally developed by Karim Kanso, maintained and enhanced by Stephan Kleber. Features zero-config demonstration mode out of the box, real-time query logging, and simple configuration via environment variables.",
+  "vendor_name": "Internet Systems Consortium",
+  "vendor_url": "https://www.isc.org/bind/",
+  "product_name": "BIND 9 DNS Appliance",
+  "product_url": "https://github.com/skleber/gns3-bind",
+  "registry_version": 4,
+  "status": "stable",
+  "maintainer": "Stephan Kleber",
+  "maintainer_email": "stephan.kleber@rwu.de",
+  "symbol": ":/symbols/classic/dns_server.svg",
+  "docker": {
+    "adapters": 1,
+    "image": "gns3-bind:latest",
+    "console_type": "telnet",
+    "environment": {
+      "QUERY_LOG": "yes",
+      "AUTHORITATIVE": "self",
+      "DOMAIN_lab_local": "@,A,10.0.0.1 ns,A,10.0.0.1 router,A,10.0.0.254 www,A,10.0.0.10 mail,A,10.0.0.20 client,A,10.0.0.100"
+    }
+  }
+}

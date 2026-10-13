@@ -1,4 +1,5 @@
 # Copyright (C) 2018 Karim Kanso. All Rights Reserved.
+# Copyright (C) 2026 Stephan Kleber. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +16,28 @@
 
 FROM alpine:latest
 
-RUN apk add --no-cache bind
+# Install BIND 9, DNS utilities, networking inspection tools, and bash for classroom teaching
+RUN apk add --no-cache \
+    bind \
+    bind-tools \
+    bash \
+    bash-completion \
+    iproute2 \
+    iputils \
+    tcpdump \
+    curl \
+    nano
+
+# Set bash as default shell and customize prompt for GNS3 lab usage
+ENV SHELL=/bin/bash
+RUN echo 'export PS1="\[\033[01;32m\]gns3-bind\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]# "' >> /etc/bash.bashrc \
+    && echo 'source /etc/bash.bashrc' >> /root/.bashrc
 
 EXPOSE 53/udp
 EXPOSE 53/tcp
+
+COPY bin/ /usr/local/bin/
+RUN chmod +x /usr/local/bin/* 2>/dev/null || true
 
 COPY startup.sh /startup.sh
 RUN chmod +x /startup.sh
