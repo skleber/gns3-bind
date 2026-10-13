@@ -26,7 +26,6 @@ options {
         allow-transfer {
                 none;
         };
-        dnssec-enable no;
         dnssec-validation no;
 
         pid-file "/var/run/named/named.pid";
@@ -197,6 +196,9 @@ zone "${D}" IN {
 EOF
 done
 
+mkdir -p /var/run/named
+chown -R named:named /var/bind /var/run/named 2>/dev/null || true
+
 echo "Starting named"
 
-exec named -g
+exec named -u named -g

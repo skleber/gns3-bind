@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM alpine:3.10
+FROM alpine:latest
 
 RUN apk add --no-cache bind
 
@@ -21,5 +21,6 @@ EXPOSE 53/udp
 EXPOSE 53/tcp
 
 COPY startup.sh /startup.sh
+RUN chmod +x /startup.sh
 
-CMD /startup.sh
+CMD ["/startup.sh"]
