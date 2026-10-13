@@ -16,6 +16,12 @@
 
 FROM alpine:latest
 
+LABEL org.opencontainers.image.title="BIND 9 DNS Appliance for GNS3" \
+      org.opencontainers.image.description="ISC BIND 9 authoritative and recursive DNS server for GNS3 network simulations and teaching labs" \
+      org.opencontainers.image.url="https://github.com/skleber/gns3-bind" \
+      org.opencontainers.image.source="https://github.com/skleber/gns3-bind" \
+      org.opencontainers.image.licenses="GPL-3.0-or-later"
+
 # Install BIND 9, DNS utilities, networking inspection tools, and bash for classroom teaching
 RUN apk add --no-cache \
     bind \

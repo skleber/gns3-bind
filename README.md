@@ -24,16 +24,21 @@ Lightweight Alpine-based Docker image optimized for **GNS3 network simulations, 
 
 ## GNS3 Quickstart
 
-### Method 1: Import via Appliance Template
+### Method 1: Import via Appliance Template (Recommended)
 1. In GNS3, click **File** &rarr; **Import appliance**.
 2. Select [`gns3-bind.gns3a`](file:///D:/Teach/internet-material/GNS3/gns3-bind/gns3-bind.gns3a).
-3. The **BIND DNS Server** node will now appear under your **End devices / Guests** palette.
+3. The **BIND DNS Server** node will now appear under your **End devices / Guests** palette. GNS3 will automatically pull the container image (`ghcr.io/skleber/gns3-bind:latest`) from GitHub Packages when dragged onto the canvas.
 
-### Method 2: Build Locally with Docker
+### Method 2: Pull or Build Manually with Docker
+To pull the pre-built image from GitHub Container Registry:
 ```bash
-docker build -t gns3-bind:latest .
+docker pull ghcr.io/skleber/gns3-bind:latest
 ```
-In GNS3: **Edit** &rarr; **Preferences** &rarr; **Docker containers** &rarr; **New** &rarr; Select `gns3-bind:latest`.
+Or build locally from source:
+```bash
+docker build -t ghcr.io/skleber/gns3-bind:latest .
+```
+In GNS3: **Edit** &rarr; **Preferences** &rarr; **Docker containers** &rarr; **New** &rarr; Select `ghcr.io/skleber/gns3-bind:latest`.
 
 ### Running in a GNS3 Lab Topology
 1. Drag the **BIND DNS Server** into your topology and connect `eth0` to a switch or router.
