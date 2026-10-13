@@ -215,8 +215,78 @@ ${SELF_ADDRESS_RR}
 EOF
     fi
 
-    # Append resource records
-    echo "${records}" | awk 'BEGIN {RS=" "; FS=","; OFS="\t"} {print $1,$2,$3}' >> "${D_ZONE}"
+    # Append resource records (supports A, AAAA, CNAME, PTR, NS, MX, TXT)
+    echo "${records}" | awk '
+BEGIN {
+    OFS = "\t";
+}
+{
+    line = $0;
+    len = length(line);
+    token = "";
+    in_quote = 0;
+    num_tokens = 0;
+    delete tokens;
+
+    for (i = 1; i <= len; i++) {
+        c = substr(line, i, 1);
+        if (c == "\"") {
+            in_quote = !in_quote;
+            token = token c;
+        } else if ((c == " " || c == "\t") && !in_quote) {
+            if (length(token) > 0) {
+                tokens[++num_tokens] = token;
+                token = "";
+            }
+        } else {
+            token = token c;
+        }
+    }
+    if (length(token) > 0) {
+        tokens[++num_tokens] = token;
+    }
+
+    for (k = 1; k <= num_tokens; k++) {
+        rec = tokens[k];
+        num_parts = split(rec, parts, ",");
+        if (num_parts < 2) continue;
+
+        owner = parts[1];
+        rtype = parts[2];
+
+        if (rtype == "MX") {
+            if (num_parts >= 4) {
+                # Format: owner,MX,priority,mailserver
+                print owner, rtype, parts[3], parts[4];
+            } else if (num_parts == 3) {
+                # Format: owner,MX,priority:mailserver or owner,MX,"priority mailserver"
+                n = split(parts[3], mxp, "[: ]");
+                if (n >= 2) {
+                    print owner, rtype, mxp[1], mxp[2];
+                } else {
+                    print owner, rtype, parts[3];
+                }
+            }
+        } else if (rtype == "TXT") {
+            txtval = parts[3];
+            for (p = 4; p <= num_parts; p++) {
+                txtval = txtval "," parts[p];
+            }
+            if (txtval !~ /^".*"$/) {
+                txtval = "\"" txtval "\"";
+            }
+            print owner, rtype, txtval;
+        } else if (num_parts >= 4) {
+            rest = parts[3];
+            for (p = 4; p <= num_parts; p++) {
+                rest = rest "\t" parts[p];
+            }
+            print owner, rtype, rest;
+        } else if (num_parts == 3) {
+            print owner, rtype, parts[3];
+        }
+    }
+}' >> "${D_ZONE}"
 
     cat - >> "${CONF_FILE}" <<EOF
 zone "${D_NAME}" IN {

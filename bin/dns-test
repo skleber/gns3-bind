@@ -26,10 +26,10 @@ for z in $ZONES; do
     echo -n "  NS:  "
     dig @127.0.0.1 "${z}" NS +short || echo "(no NS answer)"
     
-    # Query all A and AAAA records defined in the zone file
+    # Query all defined resource records (A, AAAA, CNAME, MX, TXT, PTR)
     ZONE_FILE="/var/bind/zones/${z}.zone"
     if [ -f "$ZONE_FILE" ]; then
-        awk '$2 == "A" || $2 == "AAAA" {print $1, $2}' "$ZONE_FILE" | while read -r name rtype; do
+        awk '$2 ~ /^(A|AAAA|CNAME|MX|TXT|PTR)$/ {print $1, $2}' "$ZONE_FILE" | while read -r name rtype; do
             query_name="${name}"
             if [ "$name" = "@" ]; then
                 query_name="${z}"

@@ -118,13 +118,17 @@ Delegate: .com        Delegate: .example.com   Delegate: N/A
 
 For each domain to host, set an environment variable `DOMAIN_<name>`. Underscores in `<name>` are converted to dots.
 
-The value is a space-separated sequence of `owner,type,rdata` comma-separated tuples:
-* `owner`: Resource record name (use `@` for zone root).
-* `type`: Record type (`A`, `AAAA`, `CNAME`, `MX`, `TXT`, `PTR`, `NS`, etc.).
-* `rdata`: Value of the record.
+The value is a space-separated sequence of comma-separated tuples:
+* **Standard 3-field tuple (`owner,type,rdata`)**:
+  * `owner`: Resource record name (use `@` for zone root).
+  * `type`: Record type (`A`, `AAAA`, `CNAME`, `TXT`, `PTR`, `NS`, etc.).
+  * `rdata`: Record value or target hostname/IP. Text records with spaces can be enclosed in double quotes (e.g. `"v=spf1 mx ~all"`).
+* **MX 4-field tuple (`owner,MX,priority,mailserver`)**:
+  * DNS Mail Exchanger (`MX`) records require an integer priority (preference) in addition to the mailserver hostname.
+  * Example: `@,MX,10,mail.example.com.` or `@,MX,20,backup.example.com.`
 
 ```bash
-DOMAIN_name="owner1,type1,rdata1 owner2,type2,rdata2"
+DOMAIN_name="owner1,type1,rdata1 owner2,MX,priority2,mailserver2"
 ```
 
 ### Example 1: Simple Local Network
@@ -132,12 +136,22 @@ DOMAIN_name="owner1,type1,rdata1 owner2,type2,rdata2"
 DOMAIN_lab="@,A,192.168.1.1 ns,A,192.168.1.1 router,A,192.168.1.254 www,A,192.168.1.10"
 ```
 
-### Example 2: Dual Stack (IPv4 & IPv6)
+### Example 2: Mail Exchange (MX) & Text (TXT) Records
+Demonstrating mail server priority and SPF verification records:
+```bash
+DOMAIN_example_com="@,A,10.0.0.1 mail,A,10.0.0.25 backup,A,10.0.0.26 @,MX,10,mail.example.com. @,MX,20,backup.example.com. @,TXT,\"v=spf1 mx ~all\""
+```
+
+Querying this configuration:
+* `dig @<server-ip> example.com MX +short` &rarr; `10 mail.example.com.` / `20 backup.example.com.`
+* `dig @<server-ip> example.com TXT +short` &rarr; `"v=spf1 mx ~all"`
+
+### Example 3: Dual Stack (IPv4 & IPv6)
 ```bash
 DOMAIN_example_com="@,A,10.0.0.1 @,AAAA,fd00:1::1 www,A,10.0.0.10 www,AAAA,fd00:1::10"
 ```
 
-### Example 3: Subdomain Delegation with Glue Records
+### Example 4: Subdomain Delegation with Glue Records
 On the parent DNS server for `com`:
 ```bash
 DOMAIN_com="example,NS,ns.example ns.example,A,172.17.0.2 www,A,10.0.0.2"
